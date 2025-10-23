@@ -2,11 +2,6 @@ name: Run Tests
 
 on:
   workflow_call:
-    inputs:
-      debug-artifact-name:
-        description: "Name of the debug artifact to download"
-        required: true
-        type: string
 
 jobs:
   test:
@@ -22,17 +17,5 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/setup
 
-      - name: Download debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.debug-artifact-name }}
-          path: ./artifact
-
-      - name: Place binary in correct location
-        run: |
-          mkdir -p target/debug
-          mv ./artifact/kpv target/debug/kpv
-          chmod +x target/debug/kpv
-
-      - name: Run all tests with pre-built binary
-        run: RUST_TEST_THREADS=1 cargo test --all-targets --all-features --no-build
+      - name: Run all tests
+        run: RUST_TEST_THREADS=1 cargo test --all-targets --all-features

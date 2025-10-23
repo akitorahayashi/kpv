@@ -2,17 +2,11 @@ name: Build
 
 on:
   workflow_call:
-    outputs:
-      debug-artifact-name:
-        description: "Name of the uploaded debug binary artifact"
-        value: ${{ jobs.build-debug.outputs.artifact-name }}
 
 jobs:
   build-debug:
     name: Build debug binary
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: kpv-debug-binary
 
     steps:
       - name: Checkout code
@@ -23,13 +17,6 @@ jobs:
 
       - name: Build debug binary
         run: cargo build
-
-      - name: Upload debug artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: kpv-debug-binary
-          path: target/debug/kpv
-          retention-days: 1
 
   build-release:
     name: Build release binary
@@ -44,10 +31,3 @@ jobs:
 
       - name: Build release binary
         run: cargo build --release
-
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: kpv-release-binary
-          path: target/release/kpv
-          retention-days: 1
