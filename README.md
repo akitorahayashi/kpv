@@ -46,18 +46,14 @@ cargo build --release
 
 The optimized binary lives at `target/release/kpv`.
 
-## Automation With `just`
+## Development Commands
 
-The project uses [`just`](https://github.com/casey/just) for automation. After installing `just`, the following recipes keep daily tasks tidy:
-
-- `just setup` &mdash; pre-fetch dependencies.
-- `just format` &mdash; run `cargo fmt` across the workspace.
-- `just lint` &mdash; format check plus `cargo clippy --all-targets --all-features -D warnings`.
-- `just test` &mdash; run all tests.
-- `just build-release` &mdash; build the optimized release binary.
-- `just clean` &mdash; remove build and tool caches.
-
-See the inline comments in `justfile` for additional utilities.
+- `cargo build` &mdash; build a debug binary.
+- `cargo build --release` &mdash; build the optimized release binary.
+- `cargo fmt` &mdash; format code using rustfmt.
+- `cargo fmt --check && cargo clippy --all-targets --all-features -- -D warnings` &mdash; format check and lint with clippy.
+- `RUST_TEST_THREADS=1 cargo test --all-targets --all-features` &mdash; run all tests.
+- `cargo fetch --locked` &mdash; pre-fetch dependencies.
 
 ## Testing Culture
 
@@ -68,7 +64,7 @@ Tests follow standard Rust conventions:
 - **Integration Tests**: Located in the `tests/` directory. Each `.rs` file (e.g., `tests/cli_commands.rs`, `tests/commands_api.rs`, `tests/cli_flow.rs`) is compiled as a separate crate, testing the public API and full user workflows from an external perspective.
 - **Common Utilities**: Shared test code like `TestContext` resides in `tests/common/mod.rs` and is included in integration tests via `mod common`.
 
-Tests involving filesystem modifications use `serial_test` to ensure they run sequentially and avoid conflicts. Run all tests via `cargo test` or `just test`.
+Tests involving filesystem modifications use `serial_test` to ensure they run sequentially and avoid conflicts. Run all tests via `cargo test`.
 
 ## Storage Layout
 
@@ -84,9 +80,10 @@ Tests involving filesystem modifications use `serial_test` to ensure they run se
 
 ## Contributing
 
-1. `just setup`
+1. `cargo fetch --locked` to pre-fetch dependencies.
 2. Implement your change and update/extend the relevant tests.
-3. `just lint` and `just test`
-4. Open a PR &mdash; the CI mirrors these commands via reusable GitHub Actions workflows.
+3. Run `cargo fmt --check && cargo clippy --all-targets --all-features -- -D warnings` to lint.
+4. Run `RUST_TEST_THREADS=1 cargo test --all-targets --all-features` to test.
+5. Open a PR &mdash; the CI mirrors these commands via reusable GitHub Actions workflows.
 
 Thanks for helping keep `.env` juggling painless!
