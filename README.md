@@ -9,13 +9,14 @@ A friendly CLI for stashing and re-attaching `.env` files across projects.
 - **save** (`sv`) &mdash; capture the current directory's `.env` under a named key (`kpv save <key>` or `kpv sv <key>`)
 - **link** (`ln`) &mdash; symlink a saved `.env` back into the working tree (`kpv link <key>` or `kpv ln <key>`)
 - **list** (`ls`) &mdash; enumerate the keys already managed by `kpv` (`kpv list` or `kpv ls`)
+- **delete** (`rm`) &mdash; remove a saved key and its associated `.env` file (`kpv delete <key>` or `kpv rm <key>`)
 
 ## Architecture Layers
 
 `kpv` keeps the binary lean by funnelling everything through three library layers:
 
 - `src/commands.rs` holds the public API used by both the CLI and integration tests. It wires dependencies, performs user-facing logging, and returns `kpv::error::KpvError` on failure.
-- `src/core/` encapsulates the business rules via command structs (save/link/list) that implement a shared `Execute` trait. Each command decides when to error without performing I/O.
+- `src/core/` encapsulates the business rules via command structs (save/link/list/delete) that implement a shared `Execute` trait. Each command decides when to error without performing I/O.
 - `src/storage.rs` provides the `Storage` trait plus the `FilesystemStorage` implementation that talks to the filesystem, keeping path resolution and symlink logic in one place.
 
 This separation keeps side effects at the edge, makes core logic testable with mocks, and clarifies where to add new behaviors.
@@ -32,6 +33,9 @@ $ kpv list
 
 $ kpv link web-app
 🔗 Linked: 'web-app' -> ./.env
+
+$ kpv delete web-app
+🗑️  Deleted: 'web-app'
 ```
 
 > **Heads-up:** `kpv link` refuses to overwrite an existing `.env`. Remove or rename the file first if you truly want to replace it.

@@ -49,3 +49,13 @@ pub fn list() -> Result<(), KpvError> {
 
     Ok(())
 }
+
+/// Delete command: Remove a saved key from ~/.config/kpv/<key>
+pub fn delete(key: &str) -> Result<(), KpvError> {
+    let storage = FilesystemStorage::new_default()?;
+    let command = core::delete::DeleteCommand { key };
+
+    command.execute(&storage)?;
+    println!("🗑️  Deleted: '{}'", key);
+    Ok(())
+}

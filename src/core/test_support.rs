@@ -8,6 +8,7 @@ use std::path::{Path, PathBuf};
 pub(crate) struct MockStorage {
     pub save_calls: RefCell<Vec<(String, PathBuf)>>,
     pub link_calls: RefCell<Vec<(String, PathBuf)>>,
+    pub delete_calls: RefCell<Vec<String>>,
     pub list_keys_values: RefCell<Vec<String>>,
     existing_keys: RefCell<HashSet<String>>,
 }
@@ -63,5 +64,10 @@ impl Storage for MockStorage {
 
     fn check_key_exists(&self, key: &str) -> bool {
         self.existing_keys.borrow().contains(key)
+    }
+
+    fn delete_env(&self, key: &str) -> Result<(), KpvError> {
+        self.delete_calls.borrow_mut().push(key.to_string());
+        Ok(())
     }
 }

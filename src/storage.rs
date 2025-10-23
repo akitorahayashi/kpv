@@ -8,6 +8,7 @@ pub(crate) trait Storage {
     fn list_keys(&self) -> Result<Vec<String>, KpvError>;
     fn get_key_env_path(&self, key: &str) -> PathBuf;
     fn check_key_exists(&self, key: &str) -> bool;
+    fn delete_env(&self, key: &str) -> Result<(), KpvError>;
 }
 
 #[derive(Debug, Clone)]
@@ -80,6 +81,15 @@ impl Storage for FilesystemStorage {
 
     fn check_key_exists(&self, key: &str) -> bool {
         self.key_env_path(key).exists()
+    }
+
+    fn delete_env(&self, key: &str) -> Result<(), KpvError> {
+        let key_dir = self.key_dir(key);
+        if !key_dir.exists() {
+            return Ok(());
+        }
+        fs::remove_dir_all(&key_dir)?;
+        Ok(())
     }
 }
 

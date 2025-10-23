@@ -27,6 +27,12 @@ enum Commands {
     /// List all saved keys
     #[clap(alias = "ls")]
     List,
+    /// Delete a saved key
+    #[clap(alias = "rm")]
+    Delete {
+        /// The key name to delete
+        key: String,
+    },
 }
 
 fn main() {
@@ -36,6 +42,7 @@ fn main() {
         Commands::Save { key } => commands::save(&key),
         Commands::Link { key } => commands::link(&key),
         Commands::List => commands::list(),
+        Commands::Delete { key } => commands::delete(&key),
     };
 
     if let Err(e) = result {

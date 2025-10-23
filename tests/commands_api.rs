@@ -1,7 +1,7 @@
 mod common;
 
 use common::TestContext;
-use kpv::{link, list, save};
+use kpv::{delete, link, list, save};
 use serial_test::serial;
 use std::fs;
 
@@ -60,5 +60,40 @@ fn list_returns_ok_via_library_api() {
     ctx.with_dir(ctx.work_dir(), || {
         save("sdk-list").expect("save should succeed");
         list().expect("listing should succeed with stored keys");
+    });
+}
+
+#[test]
+#[serial]
+fn delete_removes_saved_key_via_library_api() {
+    let ctx = TestContext::new();
+    ctx.write_env_file("TEMP=data\n");
+
+    ctx.with_dir(ctx.work_dir(), || {
+        save("sdk-delete").expect("save should succeed");
+    });
+
+    assert!(
+        ctx.saved_env_path("sdk-delete").exists(),
+        "Saved env should exist before delete"
+    );
+
+    ctx.with_dir(ctx.work_dir(), || {
+        delete("sdk-delete").expect("library delete should succeed");
+    });
+
+    assert!(
+        !ctx.saved_env_path("sdk-delete").exists(),
+        "Saved env should not exist after delete"
+    );
+}
+
+#[test]
+#[serial]
+fn delete_nonexistent_key_succeeds_via_library_api() {
+    let ctx = TestContext::new();
+
+    ctx.with_dir(ctx.work_dir(), || {
+        delete("nonexistent-key").expect("deleting nonexistent key should not fail");
     });
 }

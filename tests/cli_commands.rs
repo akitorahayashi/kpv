@@ -105,3 +105,66 @@ fn list_empty_succeeds() {
         .success()
         .stdout(predicate::str::contains("Saved keys:"));
 }
+
+#[test]
+#[serial]
+fn delete_removes_saved_key() {
+    let ctx = TestContext::new();
+    ctx.write_env_file("TO_DELETE=value\n");
+
+    ctx.cli()
+        .arg("save")
+        .arg("delete-me")
+        .assert()
+        .success();
+
+    assert!(
+        ctx.saved_env_path("delete-me").exists(),
+        "Key should exist before delete"
+    );
+
+    ctx.cli()
+        .arg("delete")
+        .arg("delete-me")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Deleted: 'delete-me'"));
+
+    assert!(
+        !ctx.saved_env_path("delete-me").exists(),
+        "Key should not exist after delete"
+    );
+}
+
+#[test]
+#[serial]
+fn delete_with_rm_alias() {
+    let ctx = TestContext::new();
+    ctx.write_env_file("ALIAS_TEST=data\n");
+
+    ctx.cli().arg("save").arg("alias-key").assert().success();
+
+    ctx.cli()
+        .arg("rm")
+        .arg("alias-key")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Deleted: 'alias-key'"));
+
+    assert!(
+        !ctx.saved_env_path("alias-key").exists(),
+        "Key should be deleted using rm alias"
+    );
+}
+
+#[test]
+#[serial]
+fn delete_nonexistent_key_succeeds() {
+    let ctx = TestContext::new();
+
+    ctx.cli()
+        .arg("delete")
+        .arg("does-not-exist")
+        .assert()
+        .success();
+}
