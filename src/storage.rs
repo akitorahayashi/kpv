@@ -22,6 +22,24 @@ impl FilesystemStorage {
         Ok(Self { root_path: PathBuf::from(home).join(".config").join("kpv") })
     }
 
+    fn is_key_valid(key: &str) -> bool {
+        use std::path::{Component, Path};
+        !key.is_empty()
+            && key.chars().all(|c| c.is_alphanumeric() || c == '-')
+            && Path::new(key).components().all(|c| matches!(c, Component::Normal(_)))
+    }
+
+    fn ensure_valid_key(&self, key: &str) -> Result<(), KpvError> {
+        if Self::is_key_valid(key) {
+            Ok(())
+        } else {
+            Err(KpvError::from(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                format!("invalid key: {key}"),
+            )))
+        }
+    }
+
     fn key_dir(&self, key: &str) -> PathBuf {
         self.root_path.join(key)
     }
@@ -33,6 +51,7 @@ impl FilesystemStorage {
 
 impl Storage for FilesystemStorage {
     fn save_env(&self, key: &str, source_path: &Path) -> Result<(), KpvError> {
+        self.ensure_valid_key(key)?;
         let destination_dir = self.key_dir(key);
         fs::create_dir_all(&destination_dir)?;
         let destination_file = destination_dir.join(".env");
@@ -41,18 +60,28 @@ impl Storage for FilesystemStorage {
     }
 
     fn link_env(&self, key: &str, dest_path: &Path) -> Result<(), KpvError> {
+        self.ensure_valid_key(key)?;
         let source = self.get_key_env_path(key);
         #[cfg(unix)]
         {
-            std::os::unix::fs::symlink(&source, dest_path)?;
+            match std::os::unix::fs::symlink(&source, dest_path) {
+                Ok(_) => Ok(()),
+                Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                    Err(KpvError::EnvAlreadyExists)
+                }
+                Err(e) => Err(KpvError::from(e)),
+            }
         }
-
         #[cfg(windows)]
         {
-            std::os::windows::fs::symlink_file(&source, dest_path)?;
+            match std::os::windows::fs::symlink_file(&source, dest_path) {
+                Ok(_) => Ok(()),
+                Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                    Err(KpvError::EnvAlreadyExists)
+                }
+                Err(e) => Err(KpvError::from(e)),
+            }
         }
-
-        Ok(())
     }
 
     fn list_keys(&self) -> Result<Vec<String>, KpvError> {
@@ -78,10 +107,14 @@ impl Storage for FilesystemStorage {
     }
 
     fn check_key_exists(&self, key: &str) -> bool {
+        if !Self::is_key_valid(key) {
+            return false;
+        }
         self.key_env_path(key).exists()
     }
 
     fn delete_env(&self, key: &str) -> Result<(), KpvError> {
+        self.ensure_valid_key(key)?;
         let key_dir = self.key_dir(key);
         if !key_dir.exists() {
             return Ok(());

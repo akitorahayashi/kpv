@@ -15,7 +15,7 @@ impl<'a> Execute<()> for LinkCommand<'a> {
             return Err(KpvError::key_not_found(self.key));
         }
 
-        if self.dest_path.exists() {
+        if self.dest_path.symlink_metadata().is_ok() {
             return Err(KpvError::EnvAlreadyExists);
         }
 

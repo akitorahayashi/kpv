@@ -11,7 +11,9 @@ A friendly CLI for stashing and re-attaching `.env` files across projects.
 - **list** (`ls`) &mdash; enumerate the keys already managed by `kpv` (`kpv list` or `kpv ls`)
 - **delete** (`rm`) &mdash; remove a saved key and its associated `.env` file (`kpv delete <key>` or `kpv rm <key>`)
 
-## Architecture Layers
+## Key Specifications
+
+Keys must consist only of alphanumeric characters (a-z, A-Z, 0-9) and hyphens (-). Keys cannot be empty or contain path separators (/, \).
 
 `kpv` keeps the binary lean by funnelling everything through three library layers:
 
