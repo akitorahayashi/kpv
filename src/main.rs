@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use kpv::commands;
+use kpv::error::KpvError;
 
 #[derive(Parser)]
 #[command(name = "kpv")]
@@ -31,7 +32,7 @@ enum Commands {
 fn main() {
     let cli = Cli::parse();
 
-    let result = match cli.command {
+    let result: Result<(), KpvError> = match cli.command {
         Commands::Save { key } => commands::save(&key),
         Commands::Link { key } => commands::link(&key),
         Commands::List => commands::list(),

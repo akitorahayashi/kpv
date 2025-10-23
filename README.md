@@ -1,4 +1,4 @@
-# kpv - Key-Pair Vault
+## Overview
 
 A friendly CLI for stashing and re-attaching `.env` files across projects.
 
@@ -7,6 +7,16 @@ A friendly CLI for stashing and re-attaching `.env` files across projects.
 - **save** (`sv`) &mdash; capture the current directory's `.env` under a named key (`kpv save <key>` or `kpv sv <key>`)
 - **link** (`ln`) &mdash; symlink a saved `.env` back into the working tree (`kpv link <key>` or `kpv ln <key>`)
 - **list** (`ls`) &mdash; enumerate the keys already managed by `kpv` (`kpv list` or `kpv ls`)
+
+## Architecture Layers
+
+`kpv` keeps the binary lean by funnelling everything through three library layers:
+
+- `src/commands.rs` holds the public API used by both the CLI and integration tests. It wires dependencies, performs user-facing logging, and returns `kpv::error::KpvError` on failure.
+- `src/core/` encapsulates the business rules via command structs (save/link/list) that implement a shared `Execute` trait. Each command decides when to error without performing I/O.
+- `src/storage.rs` provides the `Storage` trait plus the `FilesystemStorage` implementation that talks to the filesystem, keeping path resolution and symlink logic in one place.
+
+This separation keeps side effects at the edge, makes core logic testable with mocks, and clarifies where to add new behaviors.
 
 Example session:
 
@@ -52,7 +62,8 @@ See the inline comments in `justfile` for additional utilities.
 
 Tests follow standard Rust conventions:
 
-- **Unit Tests**: Located within `src/` files (e.g., `src/commands.rs` inside `mod tests {}`), testing individual pieces of code, including private interfaces. Run via `cargo test` or `just test`.
+- **Unit Tests**: Located within `src/` modules (e.g., `src/storage.rs`) to cover low-level helpers and filesystem boundaries. Run via `cargo test` or `just test`.
+- **Core Logic Tests**: The command pattern is covered inside `src/core/` with mock storage implementations, ensuring business rules can evolve without touching the filesystem.
 - **Integration Tests**: Located in the `tests/` directory. Each `.rs` file (e.g., `tests/cli_commands.rs`, `tests/commands_api.rs`) is compiled as a separate crate, testing the public API from an external perspective. Run via `cargo test` or `just test`.
 - **Common Utilities**: Shared test code like `TestContext` resides in `tests/common/mod.rs` and is included in integration tests via `mod common`.
 - **End-to-End Tests**: Integration tests marked with `#[ignore]` (e.g., `tests/cli_flow.rs`) cover full user workflows. Run specifically via `just e2e-test`.
