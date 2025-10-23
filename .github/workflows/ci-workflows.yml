@@ -8,9 +8,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-linters:
+  lint:
     uses: ./.github/workflows/run-linters.yml
 
-  run-tests:
+  build:
+    name: Build
+    id: build_job
+    uses: ./.github/workflows/build.yml
+
+  test:
+    name: Test
+    needs: [ build ]
     uses: ./.github/workflows/run-tests.yml
-    secrets: inherit
+    with:
+      debug-artifact-name: ${{ needs.build.outputs.debug-artifact-name }}
