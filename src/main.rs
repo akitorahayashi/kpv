@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
-
-mod commands;
+use kpv::commands;
 
 #[derive(Parser)]
 #[command(name = "kpv")]
@@ -13,16 +12,19 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Save the current .env file under a key
+    #[clap(alias = "sv")]
     Save {
         /// The key name to save the .env file under
         key: String,
     },
     /// Link a saved .env file to the current directory
+    #[clap(alias = "ln")]
     Link {
         /// The key name to link from
         key: String,
     },
     /// List all saved keys
+    #[clap(alias = "ls")]
     List,
 }
 

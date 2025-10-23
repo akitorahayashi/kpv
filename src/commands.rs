@@ -112,6 +112,7 @@ pub fn list() -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serial_test::serial;
     use std::env;
     use std::fs;
     use std::io::Write;
@@ -133,6 +134,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_save_creates_env_file() {
         let (test_dir, storage_dir) = setup_test_env();
         let work_dir = test_dir.join("work");
@@ -161,6 +163,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_save_without_env_file() {
         let (test_dir, _) = setup_test_env();
         let work_dir = test_dir.join("work2");
@@ -176,6 +179,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_list_empty() {
         let (test_dir, _) = setup_test_env();
 
@@ -187,6 +191,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_list_with_keys() {
         let (test_dir, storage_dir) = setup_test_env();
 

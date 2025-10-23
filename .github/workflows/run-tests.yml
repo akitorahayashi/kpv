@@ -1,0 +1,52 @@
+name: Run Tests
+
+on:
+  workflow_call:
+    secrets: inherit
+
+jobs:
+  test:
+    name: Run unit and integration tests
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Run tests
+        run: just test
+
+  e2e-test:
+    name: Run end-to-end tests
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Run e2e tests
+        run: just e2e-test
+
+  build-release:
+    name: Build release binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Build release
+        run: just build-release
