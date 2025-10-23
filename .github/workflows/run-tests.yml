@@ -7,7 +7,6 @@ on:
         description: "Name of the debug artifact to download"
         required: true
         type: string
-    secrets: inherit
 
 jobs:
   test:

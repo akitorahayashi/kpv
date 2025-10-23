@@ -2,11 +2,10 @@ name: Build
 
 on:
   workflow_call:
-
-outputs:
-  debug-artifact-name:
-    description: "Name of the uploaded debug binary artifact"
-    value: ${{ jobs.build-debug.outputs.artifact-name }}
+    outputs:
+      debug-artifact-name:
+        description: "Name of the uploaded debug binary artifact"
+        value: ${{ jobs.build-debug.outputs.artifact-name }}
 
 jobs:
   build-debug:
@@ -16,11 +15,8 @@ jobs:
       artifact-name: kpv-debug-binary
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Rust cache
-        uses: swatinem/rust-cache@v2
+      - name: Setup Rust Environment
+        uses: ./.github/actions/setup
 
       - name: Build debug binary
         run: cargo build
@@ -37,11 +33,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Rust cache
-        uses: swatinem/rust-cache@v2
+      - name: Setup Rust Environment
+        uses: ./.github/actions/setup
 
       - name: Build release binary
         run: cargo build --release

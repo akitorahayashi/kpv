@@ -7,13 +7,11 @@ jobs:
   run-linters:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup environment
+      - name: Setup Rust Environment
         uses: ./.github/actions/setup
         with:
-          dependencies-command: 'cargo fetch --locked'
+          components: rustfmt,clippy
 
       - name: Run Linters
         run: just lint
+        shell: bash

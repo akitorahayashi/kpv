@@ -1,28 +1,36 @@
-name: Setup
-description: Common setup steps for kpv workflows
-
+name: 'Setup Rust Environment'
+description: 'Checks out code, installs Rust, and caches Cargo dependencies'
 inputs:
-  dependencies-command:
-    description: Command to prepare project dependencies
+  rust-version:
+    description: 'Rust toolchain version'
     required: false
-    default: 'cargo fetch --locked'
+    default: 'stable'
+  components:
+    description: 'Rust toolchain components to install (comma-separated, e.g., rustfmt,clippy)'
+    required: false
+    default: ''
 
 runs:
-  using: composite
+  using: 'composite'
   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Install Rust toolchain
-      uses: rust-lang/setup-rust-toolchain@v1
+      uses: dtolnay/rust-toolchain@v1
       with:
-        toolchain: stable
-        components: clippy, rustfmt
+        toolchain: ${{ inputs.rust-version }}
+        components: ${{ inputs.components }}
 
-    - name: Cache cargo artifacts
-      uses: Swatinem/rust-cache@v2
-
-    - name: Install just
-      uses: extractions/setup-just@v2
-
-    - name: Install dependencies
-      if: inputs.dependencies-command != ''
-      run: ${{ inputs.dependencies-command }}
-      shell: bash
+    - name: Cache Cargo dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
