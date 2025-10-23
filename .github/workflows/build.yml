@@ -15,6 +15,9 @@ jobs:
       artifact-name: kpv-debug-binary
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Rust Environment
         uses: ./.github/actions/setup
 
@@ -33,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Rust Environment
         uses: ./.github/actions/setup
 
