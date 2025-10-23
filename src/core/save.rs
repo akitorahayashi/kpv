@@ -31,10 +31,7 @@ mod tests {
         let file = NamedTempFile::new().expect("failed to create temp file");
         std::fs::write(file.path(), "KEY=value\n").expect("failed to write temp file");
 
-        let command = SaveCommand {
-            key: "my-key",
-            source_path: file.path(),
-        };
+        let command = SaveCommand { key: "my-key", source_path: file.path() };
 
         let storage = MockStorage::default();
         command.execute(&storage).expect("execution should succeed");
@@ -48,10 +45,7 @@ mod tests {
     #[test]
     fn save_errors_when_source_missing() {
         let missing_path = std::path::PathBuf::from("/tmp/non-existent-env");
-        let command = SaveCommand {
-            key: "missing",
-            source_path: &missing_path,
-        };
+        let command = SaveCommand { key: "missing", source_path: &missing_path };
 
         let storage = MockStorage::default();
         let result = command.execute(&storage);
@@ -62,10 +56,7 @@ mod tests {
     #[test]
     fn save_errors_when_source_is_directory() {
         let dir = tempfile::tempdir().expect("failed to create temp dir");
-        let command = SaveCommand {
-            key: "dir-key",
-            source_path: dir.path(),
-        };
+        let command = SaveCommand { key: "dir-key", source_path: dir.path() };
 
         let storage = MockStorage::default();
         let result = command.execute(&storage);
@@ -79,10 +70,7 @@ mod tests {
 
         impl Storage for ErrorStorage {
             fn save_env(&self, _key: &str, _source_path: &Path) -> Result<(), KpvError> {
-                Err(KpvError::from(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "boom",
-                )))
+                Err(KpvError::from(std::io::Error::other("boom")))
             }
 
             fn link_env(&self, _key: &str, _dest_path: &Path) -> Result<(), KpvError> {
@@ -100,13 +88,14 @@ mod tests {
             fn check_key_exists(&self, _key: &str) -> bool {
                 unreachable!()
             }
+
+            fn delete_env(&self, _key: &str) -> Result<(), KpvError> {
+                unreachable!()
+            }
         }
 
         let file = NamedTempFile::new().expect("failed to create temp file");
-        let command = SaveCommand {
-            key: "err",
-            source_path: file.path(),
-        };
+        let command = SaveCommand { key: "err", source_path: file.path() };
 
         let storage = ErrorStorage;
         let result = command.execute(&storage);

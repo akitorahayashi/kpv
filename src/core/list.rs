@@ -43,10 +43,7 @@ mod tests {
             }
 
             fn list_keys(&self) -> Result<Vec<String>, KpvError> {
-                Err(KpvError::from(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "list failure",
-                )))
+                Err(KpvError::from(std::io::Error::other("list failure")))
             }
 
             fn get_key_env_path(&self, _key: &str) -> std::path::PathBuf {
@@ -55,6 +52,10 @@ mod tests {
 
             fn check_key_exists(&self, _key: &str) -> bool {
                 false
+            }
+
+            fn delete_env(&self, _key: &str) -> Result<(), KpvError> {
+                unreachable!()
             }
         }
 

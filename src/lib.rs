@@ -6,4 +6,4 @@ pub mod error;
 mod core;
 mod storage;
 
-pub use commands::{link, list, save};
+pub use commands::{delete, link, list, save};

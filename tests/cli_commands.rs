@@ -20,11 +20,7 @@ fn save_and_list() {
 
     ctx.assert_saved_env_contains("test-project", "API_KEY=secret123");
 
-    ctx.cli()
-        .arg("list")
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("test-project"));
+    ctx.cli().arg("list").assert().success().stdout(predicate::str::contains("test-project"));
 }
 
 #[test]
@@ -50,11 +46,7 @@ fn link_creates_symlink() {
     {
         assert!(link_path.is_symlink(), "Expected .env to be a symlink");
         let target = fs::read_link(&link_path).expect("Failed to read symlink target");
-        assert_eq!(
-            target,
-            ctx.saved_env_path("db-project"),
-            "Symlink target mismatch"
-        );
+        assert_eq!(target, ctx.saved_env_path("db-project"), "Symlink target mismatch");
     }
 }
 
@@ -77,11 +69,7 @@ fn link_existing_env_error() {
     let ctx = TestContext::new();
     ctx.write_env_file("TEST=value\n");
 
-    ctx.cli()
-        .arg("save")
-        .arg("existing-project")
-        .assert()
-        .success();
+    ctx.cli().arg("save").arg("existing-project").assert().success();
 
     let link_workspace = ctx.create_workspace("occupied-workspace");
     ctx.touch_env_in(&link_workspace);
@@ -99,11 +87,7 @@ fn link_existing_env_error() {
 fn list_empty_succeeds() {
     let ctx = TestContext::new();
 
-    ctx.cli()
-        .arg("list")
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("Saved keys:"));
+    ctx.cli().arg("list").assert().success().stdout(predicate::str::contains("Saved keys:"));
 }
 
 #[test]
@@ -112,16 +96,9 @@ fn delete_removes_saved_key() {
     let ctx = TestContext::new();
     ctx.write_env_file("TO_DELETE=value\n");
 
-    ctx.cli()
-        .arg("save")
-        .arg("delete-me")
-        .assert()
-        .success();
+    ctx.cli().arg("save").arg("delete-me").assert().success();
 
-    assert!(
-        ctx.saved_env_path("delete-me").exists(),
-        "Key should exist before delete"
-    );
+    assert!(ctx.saved_env_path("delete-me").exists(), "Key should exist before delete");
 
     ctx.cli()
         .arg("delete")
@@ -130,10 +107,7 @@ fn delete_removes_saved_key() {
         .success()
         .stdout(predicate::str::contains("Deleted: 'delete-me'"));
 
-    assert!(
-        !ctx.saved_env_path("delete-me").exists(),
-        "Key should not exist after delete"
-    );
+    assert!(!ctx.saved_env_path("delete-me").exists(), "Key should not exist after delete");
 }
 
 #[test]
@@ -151,10 +125,7 @@ fn delete_with_rm_alias() {
         .success()
         .stdout(predicate::str::contains("Deleted: 'alias-key'"));
 
-    assert!(
-        !ctx.saved_env_path("alias-key").exists(),
-        "Key should be deleted using rm alias"
-    );
+    assert!(!ctx.saved_env_path("alias-key").exists(), "Key should be deleted using rm alias");
 }
 
 #[test]
@@ -162,9 +133,5 @@ fn delete_with_rm_alias() {
 fn delete_nonexistent_key_succeeds() {
     let ctx = TestContext::new();
 
-    ctx.cli()
-        .arg("delete")
-        .arg("does-not-exist")
-        .assert()
-        .success();
+    ctx.cli().arg("delete").arg("does-not-exist").assert().success();
 }

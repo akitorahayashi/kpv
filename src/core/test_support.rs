@@ -41,16 +41,12 @@ impl MockStorage {
 
 impl Storage for MockStorage {
     fn save_env(&self, key: &str, source_path: &Path) -> Result<(), KpvError> {
-        self.save_calls
-            .borrow_mut()
-            .push((key.to_string(), source_path.to_path_buf()));
+        self.save_calls.borrow_mut().push((key.to_string(), source_path.to_path_buf()));
         Ok(())
     }
 
     fn link_env(&self, key: &str, dest_path: &Path) -> Result<(), KpvError> {
-        self.link_calls
-            .borrow_mut()
-            .push((key.to_string(), dest_path.to_path_buf()));
+        self.link_calls.borrow_mut().push((key.to_string(), dest_path.to_path_buf()));
         Ok(())
     }
 

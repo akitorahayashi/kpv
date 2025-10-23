@@ -19,9 +19,7 @@ pub(crate) struct FilesystemStorage {
 impl FilesystemStorage {
     pub fn new_default() -> Result<Self, KpvError> {
         let home = std::env::var("HOME").map_err(|_| KpvError::HomeNotConfigured)?;
-        Ok(Self {
-            root_path: PathBuf::from(home).join(".config").join("kpv"),
-        })
+        Ok(Self { root_path: PathBuf::from(home).join(".config").join("kpv") })
     }
 
     fn key_dir(&self, key: &str) -> PathBuf {
@@ -65,10 +63,10 @@ impl Storage for FilesystemStorage {
         let mut keys = Vec::new();
         for entry in fs::read_dir(&self.root_path)? {
             let entry = entry?;
-            if entry.path().is_dir() {
-                if let Some(name) = entry.file_name().to_str() {
-                    keys.push(name.to_string());
-                }
+            if entry.path().is_dir()
+                && let Some(name) = entry.file_name().to_str()
+            {
+                keys.push(name.to_string());
             }
         }
 
@@ -118,11 +116,7 @@ mod tests {
             let work_dir = root.path().join("work");
             fs::create_dir_all(&work_dir).expect("failed to create work dir");
 
-            Self {
-                root,
-                original_home,
-                work_dir,
-            }
+            Self { root, original_home, work_dir }
         }
 
         fn storage(&self) -> FilesystemStorage {
@@ -160,9 +154,7 @@ mod tests {
         let mut file = fs::File::create(&source).expect("failed to create .env source");
         writeln!(file, "TEST_VAR=test").expect("failed to write .env source");
 
-        storage
-            .save_env("test-key", &source)
-            .expect("save_env should succeed");
+        storage.save_env("test-key", &source).expect("save_env should succeed");
 
         let saved_path = ctx.storage_root().join("test-key").join(".env");
         let content = fs::read_to_string(saved_path).expect("failed to read saved env");
@@ -187,9 +179,7 @@ mod tests {
         fs::remove_dir_all(ctx.storage_root()).ok();
 
         let storage = ctx.storage();
-        let keys = storage
-            .list_keys()
-            .expect("list_keys should succeed with empty root");
+        let keys = storage.list_keys().expect("list_keys should succeed with empty root");
         assert!(keys.is_empty());
     }
 

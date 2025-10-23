@@ -39,11 +39,7 @@ fn link_uses_saved_env_via_library_api() {
     {
         assert!(link_path.is_symlink(), ".env should be a symlink");
         let target = fs::read_link(&link_path).expect("Failed to inspect symlink");
-        assert_eq!(
-            target,
-            ctx.saved_env_path("sdk-link"),
-            "Unexpected symlink target",
-        );
+        assert_eq!(target, ctx.saved_env_path("sdk-link"), "Unexpected symlink target",);
     }
 }
 
@@ -73,19 +69,13 @@ fn delete_removes_saved_key_via_library_api() {
         save("sdk-delete").expect("save should succeed");
     });
 
-    assert!(
-        ctx.saved_env_path("sdk-delete").exists(),
-        "Saved env should exist before delete"
-    );
+    assert!(ctx.saved_env_path("sdk-delete").exists(), "Saved env should exist before delete");
 
     ctx.with_dir(ctx.work_dir(), || {
         delete("sdk-delete").expect("library delete should succeed");
     });
 
-    assert!(
-        !ctx.saved_env_path("sdk-delete").exists(),
-        "Saved env should not exist after delete"
-    );
+    assert!(!ctx.saved_env_path("sdk-delete").exists(), "Saved env should not exist after delete");
 }
 
 #[test]

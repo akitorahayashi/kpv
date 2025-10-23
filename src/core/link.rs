@@ -35,10 +35,7 @@ mod tests {
         let dest = temp_dir.path().join(".env");
 
         let storage = MockStorage::with_existing_keys(&["demo-key"]);
-        let command = LinkCommand {
-            key: "demo-key",
-            dest_path: &dest,
-        };
+        let command = LinkCommand { key: "demo-key", dest_path: &dest };
 
         command.execute(&storage).expect("link should succeed");
 
@@ -54,10 +51,7 @@ mod tests {
         let dest = temp_dir.path().join(".env");
         let storage = MockStorage::default();
 
-        let command = LinkCommand {
-            key: "absent",
-            dest_path: &dest,
-        };
+        let command = LinkCommand { key: "absent", dest_path: &dest };
 
         let result = command.execute(&storage);
         assert!(matches!(result, Err(KpvError::KeyNotFound(key)) if key == "absent"));
@@ -71,10 +65,7 @@ mod tests {
         std::fs::write(&dest, "placeholder").expect("failed to create existing dest");
 
         let storage = MockStorage::with_existing_keys(&["demo-key"]);
-        let command = LinkCommand {
-            key: "demo-key",
-            dest_path: &dest,
-        };
+        let command = LinkCommand { key: "demo-key", dest_path: &dest };
 
         let result = command.execute(&storage);
         assert!(matches!(result, Err(KpvError::EnvAlreadyExists)));
@@ -110,14 +101,15 @@ mod tests {
             fn check_key_exists(&self, _key: &str) -> bool {
                 true
             }
+
+            fn delete_env(&self, _key: &str) -> Result<(), KpvError> {
+                unreachable!()
+            }
         }
 
         let temp_dir = tempfile::tempdir().expect("failed to create temp dir");
         let dest = temp_dir.path().join(".env");
-        let command = LinkCommand {
-            key: "demo-key",
-            dest_path: &dest,
-        };
+        let command = LinkCommand { key: "demo-key", dest_path: &dest };
 
         let storage = ErrorStorage;
         let result = command.execute(&storage);

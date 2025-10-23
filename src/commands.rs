@@ -8,10 +8,7 @@ use crate::storage::FilesystemStorage;
 pub fn save(key: &str) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let source = PathBuf::from(".env");
-    let command = core::save::SaveCommand {
-        key,
-        source_path: &source,
-    };
+    let command = core::save::SaveCommand { key, source_path: &source };
 
     command.execute(&storage)?;
     println!("✅ Saved: ./.env -> '{}'", key);
@@ -22,10 +19,7 @@ pub fn save(key: &str) -> Result<(), KpvError> {
 pub fn link(key: &str) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let dest = PathBuf::from(".env");
-    let command = core::link::LinkCommand {
-        key,
-        dest_path: &dest,
-    };
+    let command = core::link::LinkCommand { key, dest_path: &dest };
 
     command.execute(&storage)?;
     println!("🔗 Linked: '{}' -> ./.env", key);

@@ -28,11 +28,7 @@ impl TestContext {
             env::set_var("HOME", root.path());
         }
 
-        Self {
-            root,
-            work_dir,
-            original_home,
-        }
+        Self { root, work_dir, original_home }
     }
 
     /// Absolute path to the emulated `$HOME` directory.
@@ -78,21 +74,13 @@ impl TestContext {
 
     /// Return the path where the CLI stores a saved `.env` file for the provided key.
     pub fn saved_env_path(&self, key: &str) -> PathBuf {
-        self.home()
-            .join(".config")
-            .join("kpv")
-            .join(key)
-            .join(".env")
+        self.home().join(".config").join("kpv").join(key).join(".env")
     }
 
     /// Assert that a saved `.env` contains the provided value snippet.
     pub fn assert_saved_env_contains(&self, key: &str, expected_snippet: &str) {
         let env_path = self.saved_env_path(key);
-        assert!(
-            env_path.exists(),
-            "Expected saved .env at {}",
-            env_path.display()
-        );
+        assert!(env_path.exists(), "Expected saved .env at {}", env_path.display());
         let content = fs::read_to_string(&env_path).expect("Failed to read saved .env");
         assert!(
             content.contains(expected_snippet),

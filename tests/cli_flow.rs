@@ -39,9 +39,5 @@ fn user_can_save_link_and_list_end_to_end() {
         );
     }
 
-    ctx.cli()
-        .arg("list")
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("- e2e-project"));
+    ctx.cli().arg("list").assert().success().stdout(predicate::str::contains("- e2e-project"));
 }
