@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Run unit and integration tests
+    name: Run all tests
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: 1
@@ -34,33 +34,5 @@ jobs:
           mv ./artifact/kpv target/debug/kpv
           chmod +x target/debug/kpv
 
-      - name: Run tests with pre-built binary
+      - name: Run all tests with pre-built binary
         run: RUST_TEST_THREADS=1 cargo test --all-targets --all-features --no-build
-
-  e2e-test:
-    name: Run end-to-end tests
-    runs-on: ubuntu-latest
-    env:
-      RUST_BACKTRACE: 1
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup
-
-      - name: Download debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.debug-artifact-name }}
-          path: ./artifact
-
-      - name: Place binary in correct location
-        run: |
-          mkdir -p target/debug
-          mv ./artifact/kpv target/debug/kpv
-          chmod +x target/debug/kpv
-
-      - name: Run e2e tests with pre-built binary
-        run: RUST_TEST_THREADS=1 cargo test --test cli_flow -- --ignored --no-build

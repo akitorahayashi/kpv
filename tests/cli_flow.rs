@@ -7,7 +7,6 @@ use std::fs;
 
 #[test]
 #[serial]
-#[ignore = "Runs the full CLI workflow and is reserved for explicit e2e execution"]
 fn user_can_save_link_and_list_end_to_end() {
     let ctx = TestContext::new();
     ctx.write_env_file("TOKEN=super-secret\n");

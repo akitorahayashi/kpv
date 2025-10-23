@@ -50,11 +50,10 @@ The optimized binary lives at `target/release/kpv`.
 
 The project uses [`just`](https://github.com/casey/just) for automation. After installing `just`, the following recipes keep daily tasks tidy:
 
-- `just setup` &mdash; install required Rust components and pre-fetch dependencies.
+- `just setup` &mdash; pre-fetch dependencies.
 - `just format` &mdash; run `cargo fmt` across the workspace.
 - `just lint` &mdash; format check plus `cargo clippy --all-targets --all-features -D warnings`.
-- `just test` &mdash; run all unit and integration tests.
-- `just e2e-test` &mdash; run end-to-end tests (marked as `#[ignore]`).
+- `just test` &mdash; run all tests.
 - `just build-release` &mdash; build the optimized release binary.
 - `just clean` &mdash; remove build and tool caches.
 
@@ -64,13 +63,12 @@ See the inline comments in `justfile` for additional utilities.
 
 Tests follow standard Rust conventions:
 
-- **Unit Tests**: Located within `src/` modules (e.g., `src/storage.rs`) to cover low-level helpers and filesystem boundaries. Run via `cargo test` or `just test`.
+- **Unit Tests**: Located within `src/` modules (e.g., `src/storage.rs`) to cover low-level helpers and filesystem boundaries.
 - **Core Logic Tests**: The command pattern is covered inside `src/core/` with mock storage implementations, ensuring business rules can evolve without touching the filesystem.
-- **Integration Tests**: Located in the `tests/` directory. Each `.rs` file (e.g., `tests/cli_commands.rs`, `tests/commands_api.rs`) is compiled as a separate crate, testing the public API from an external perspective. Run via `cargo test` or `just test`.
+- **Integration Tests**: Located in the `tests/` directory. Each `.rs` file (e.g., `tests/cli_commands.rs`, `tests/commands_api.rs`, `tests/cli_flow.rs`) is compiled as a separate crate, testing the public API and full user workflows from an external perspective.
 - **Common Utilities**: Shared test code like `TestContext` resides in `tests/common/mod.rs` and is included in integration tests via `mod common`.
-- **End-to-End Tests**: Integration tests marked with `#[ignore]` (e.g., `tests/cli_flow.rs`) cover full user workflows. Run specifically via `just e2e-test`.
 
-Tests involving filesystem modifications use `serial_test` to ensure they run sequentially and avoid conflicts.
+Tests involving filesystem modifications use `serial_test` to ensure they run sequentially and avoid conflicts. Run all tests via `cargo test` or `just test`.
 
 ## Storage Layout
 

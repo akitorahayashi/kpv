@@ -22,8 +22,6 @@ help:
 
 # Install toolchain components and warm caches
 setup:
-    @echo "🛠 Installing rustfmt and clippy..."
-    @rustup component add rustfmt clippy
     @echo "🚚 Fetching dependencies..."
     @{{CARGO}} fetch --locked || echo "(fetch skipped: lockfile not frozen)"
 
@@ -66,15 +64,10 @@ lint:
 # TESTING
 # ==============================================================================
 
-# Run all unit and integration tests (excluding ignored E2E tests)
+# Run all tests
 test:
-    @echo "🚀 Running all unit and integration tests..."
+    @echo "🚀 Running all tests..."
     @RUST_TEST_THREADS=1 {{CARGO}} test --all-targets --all-features
-
-# Run E2E tests (ignored by default)
-e2e-test:
-    @echo "🚀 Running end-to-end smoke tests..."
-    @RUST_TEST_THREADS=1 {{CARGO}} test --test cli_flow -- --ignored
 
 # ==============================================================================
 # CLEANUP
