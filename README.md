@@ -1,8 +1,6 @@
 ## Overview
 
-[![CI Status](https://github.com/akitorahayashi/kpv/actions/workflows/ci-workflows.yml/badge.svg)](https://github.com/akitorahayashi/kpv/actions/workflows/ci-workflows.yml)
-
-A friendly CLI for stashing and re-attaching `.env` files across projects.
+A CLI tool for stashing and re-attaching `.env` files to projects.
 
 ## Features
 
