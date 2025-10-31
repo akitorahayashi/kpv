@@ -4,7 +4,7 @@ A CLI tool for stashing and re-attaching `.env` files to projects.
 
 ## Features
 
-- **save** (`sv`) &mdash; capture the current directory's `.env` under a named key (`kpv save <key>` or `kpv sv <key>`)
+- **save** (`sv`) &mdash; capture the current directory's `.env` under a key (`kpv save [key]` or `kpv sv [key]`); when `[key]` is omitted the current directory name is used
 - **link** (`ln`) &mdash; symlink a saved `.env` back into the working tree (`kpv link <key>` or `kpv ln <key>`)
 - **list** (`ls`) &mdash; enumerate the keys already managed by `kpv` (`kpv list` or `kpv ls`)
 - **delete** (`rm`) &mdash; remove a saved key and its associated `.env` file (`kpv delete <key>` or `kpv rm <key>`)

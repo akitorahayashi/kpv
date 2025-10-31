@@ -25,6 +25,23 @@ fn save_and_list() {
 
 #[test]
 #[serial]
+fn save_without_key_defaults_to_directory_name() {
+    let ctx = TestContext::new();
+    ctx.write_env_file("FOO=bar\n");
+
+    ctx.cli()
+        .arg("save")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Saved: ./.env -> 'work'"));
+
+    ctx.assert_saved_env_contains("work", "FOO=bar");
+
+    ctx.cli().arg("list").assert().success().stdout(predicate::str::contains("work"));
+}
+
+#[test]
+#[serial]
 fn link_creates_symlink() {
     let ctx = TestContext::new();
     ctx.write_env_file("DATABASE_URL=postgres://localhost\n");
@@ -61,6 +78,25 @@ fn save_without_env_file_fails() {
         .assert()
         .failure()
         .stderr(predicate::str::contains("No .env file found"));
+
+    let saved_env = ctx.saved_env_path("test-project");
+    assert!(!saved_env.exists(), "Failed save should not leave behind a saved .env file",);
+    if let Some(dir) = saved_env.parent() {
+        assert!(!dir.exists(), "Failed save should not leave behind the key directory",);
+    }
+}
+
+#[test]
+#[serial]
+fn help_lists_visible_aliases() {
+    let ctx = TestContext::new();
+
+    ctx.cli().arg("--help").assert().success().stdout(
+        predicate::str::contains("[aliases: sv]")
+            .and(predicate::str::contains("[aliases: ln]"))
+            .and(predicate::str::contains("[aliases: ls]"))
+            .and(predicate::str::contains("[aliases: rm]")),
+    );
 }
 
 #[test]

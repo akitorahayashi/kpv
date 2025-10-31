@@ -12,7 +12,7 @@ fn save_persists_env_via_library_api() {
     ctx.write_env_file("FOO=bar\n");
 
     ctx.with_dir(ctx.work_dir(), || {
-        save("sdk-save").expect("library save should succeed");
+        save(Some("sdk-save")).expect("library save should succeed");
     });
 
     ctx.assert_saved_env_contains("sdk-save", "FOO=bar");
@@ -25,7 +25,7 @@ fn link_uses_saved_env_via_library_api() {
     ctx.write_env_file("SERVICE_KEY=xyz\n");
 
     ctx.with_dir(ctx.work_dir(), || {
-        save("sdk-link").expect("library save should succeed");
+        save(Some("sdk-link")).expect("library save should succeed");
     });
 
     let link_workspace = ctx.create_workspace("sdk-link-workspace");
@@ -54,7 +54,7 @@ fn list_returns_ok_via_library_api() {
 
     ctx.write_env_file("KVP=value\n");
     ctx.with_dir(ctx.work_dir(), || {
-        save("sdk-list").expect("save should succeed");
+        save(Some("sdk-list")).expect("save should succeed");
         list().expect("listing should succeed with stored keys");
     });
 }
@@ -66,7 +66,7 @@ fn delete_removes_saved_key_via_library_api() {
     ctx.write_env_file("TEMP=data\n");
 
     ctx.with_dir(ctx.work_dir(), || {
-        save("sdk-delete").expect("save should succeed");
+        save(Some("sdk-delete")).expect("save should succeed");
     });
 
     assert!(ctx.saved_env_path("sdk-delete").exists(), "Saved env should exist before delete");
