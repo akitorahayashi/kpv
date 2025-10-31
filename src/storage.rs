@@ -53,9 +53,21 @@ impl Storage for FilesystemStorage {
     fn save_env(&self, key: &str, source_path: &Path) -> Result<(), KpvError> {
         self.ensure_valid_key(key)?;
         let destination_dir = self.key_dir(key);
+        let dir_existed = destination_dir.exists();
         fs::create_dir_all(&destination_dir)?;
         let destination_file = destination_dir.join(".env");
-        fs::copy(source_path, &destination_file)?;
+        if let Err(err) = fs::copy(source_path, &destination_file) {
+            // Best-effort cleanup only if we just created the directory
+            if !dir_existed && let Err(cleanup_err) = fs::remove_dir_all(&destination_dir) {
+                // Prefer the original error but include cleanup failure context for debugging.
+                let combined = std::io::Error::new(
+                    err.kind(),
+                    format!("{} (cleanup failed: {})", err, cleanup_err),
+                );
+                return Err(KpvError::from(combined));
+            }
+            return Err(KpvError::from(err));
+        }
         Ok(())
     }
 
