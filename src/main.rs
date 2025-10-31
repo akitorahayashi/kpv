@@ -28,7 +28,7 @@ enum Commands {
     #[clap(visible_alias = "ls")]
     List,
     /// Delete a saved key
-    #[clap(visible_alias = "rm")]
+    #[clap(visible_alias = "d")]
     Delete {
         /// The key name to delete
         key: String,

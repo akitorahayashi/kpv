@@ -95,7 +95,7 @@ fn help_lists_visible_aliases() {
         predicate::str::contains("[aliases: sv]")
             .and(predicate::str::contains("[aliases: ln]"))
             .and(predicate::str::contains("[aliases: ls]"))
-            .and(predicate::str::contains("[aliases: rm]")),
+            .and(predicate::str::contains("[aliases: d]")),
     );
 }
 
@@ -148,20 +148,20 @@ fn delete_removes_saved_key() {
 
 #[test]
 #[serial]
-fn delete_with_rm_alias() {
+fn delete_with_d_alias() {
     let ctx = TestContext::new();
     ctx.write_env_file("ALIAS_TEST=data\n");
 
     ctx.cli().arg("save").arg("alias-key").assert().success();
 
     ctx.cli()
-        .arg("rm")
+        .arg("d")
         .arg("alias-key")
         .assert()
         .success()
         .stdout(predicate::str::contains("Deleted: 'alias-key'"));
 
-    assert!(!ctx.saved_env_path("alias-key").exists(), "Key should be deleted using rm alias");
+    assert!(!ctx.saved_env_path("alias-key").exists(), "Key should be deleted using d alias");
 }
 
 #[test]
