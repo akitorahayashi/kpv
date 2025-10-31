@@ -29,9 +29,15 @@ pub fn save(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let source = PathBuf::from(".env");
 
-    let key_to_save = if let Some(key) = key_opt { key.to_string() } else { derive_dir_name()? };
+    let key_owned;
+    let key_to_save = if let Some(key) = key_opt {
+        key
+    } else {
+        key_owned = derive_dir_name()?;
+        &key_owned
+    };
 
-    let command = core::save::SaveCommand { key: &key_to_save, source_path: &source };
+    let command = core::save::SaveCommand { key: key_to_save, source_path: &source };
 
     command.execute(&storage)?;
     println!("✅ Saved: ./.env -> '{}'", key_to_save);
