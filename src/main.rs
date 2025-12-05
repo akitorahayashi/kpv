@@ -4,6 +4,7 @@ use kpv::error::KpvError;
 
 #[derive(Parser)]
 #[command(name = "kpv")]
+#[command(version)]
 #[command(about = "Key-Pair Vault: Manage .env files across projects", long_about = None)]
 struct Cli {
     #[command(subcommand)]

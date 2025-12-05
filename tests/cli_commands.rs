@@ -171,3 +171,11 @@ fn delete_nonexistent_key_succeeds() {
 
     ctx.cli().arg("delete").arg("does-not-exist").assert().success();
 }
+
+#[test]
+#[serial]
+fn version_flag_works() {
+    let ctx = TestContext::new();
+
+    ctx.cli().arg("--version").assert().success();
+}
