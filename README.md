@@ -38,6 +38,16 @@ $ kpv delete web-app
 🗑️  Deleted: 'web-app'
 ```
 
+## Usage
+
+```bash
+kpv --version    # Show version information
+kpv save [key]   # Save current .env file
+kpv link <key>   # Link saved .env to current directory
+kpv list         # List saved keys
+kpv delete <key> # Delete saved key
+```
+
 > **Heads-up:** `kpv link` refuses to overwrite an existing `.env`. Remove or rename the file first if you truly want to replace it.
 
 ## Installation
