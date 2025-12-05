@@ -177,5 +177,9 @@ fn delete_nonexistent_key_succeeds() {
 fn version_flag_works() {
     let ctx = TestContext::new();
 
-    ctx.cli().arg("--version").assert().success();
+    ctx.cli()
+        .arg("--version")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains(env!("CARGO_PKG_VERSION")));
 }
