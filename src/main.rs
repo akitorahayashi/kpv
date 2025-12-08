@@ -22,8 +22,8 @@ enum Commands {
     /// Link a saved .env file to the current directory
     #[clap(visible_alias = "ln")]
     Link {
-        /// The key name to link from
-        key: String,
+        /// The key name to link from. If omitted, uses the current directory's name.
+        key: Option<String>,
     },
     /// List all saved keys
     #[clap(visible_alias = "ls")]
@@ -41,7 +41,7 @@ fn main() {
 
     let result: Result<(), KpvError> = match cli.command {
         Commands::Save { key } => commands::save(key.as_deref()),
-        Commands::Link { key } => commands::link(&key),
+        Commands::Link { key } => commands::link(key.as_deref()),
         Commands::List => commands::list(),
         Commands::Delete { key } => commands::delete(&key),
     };

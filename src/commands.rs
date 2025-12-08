@@ -45,13 +45,22 @@ pub fn save(key_opt: Option<&str>) -> Result<(), KpvError> {
 }
 
 /// Link command: Create symlink from ~/.config/kpv/<key>/.env to ./.env
-pub fn link(key: &str) -> Result<(), KpvError> {
+pub fn link(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let dest = PathBuf::from(".env");
-    let command = core::link::LinkCommand { key, dest_path: &dest };
+
+    let key_owned;
+    let key_to_link = if let Some(key) = key_opt {
+        key
+    } else {
+        key_owned = derive_dir_name()?;
+        &key_owned
+    };
+
+    let command = core::link::LinkCommand { key: key_to_link, dest_path: &dest };
 
     command.execute(&storage)?;
-    println!("🔗 Linked: '{}' -> ./.env", key);
+    println!("🔗 Linked: '{}' -> ./.env", key_to_link);
     Ok(())
 }
 

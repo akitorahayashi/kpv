@@ -5,7 +5,7 @@ A CLI tool for stashing and re-attaching `.env` files to projects.
 ## Features
 
 - **save** (`sv`) &mdash; capture the current directory's `.env` under a key (`kpv save [key]` or `kpv sv [key]`); when `[key]` is omitted the current directory name is used
-- **link** (`ln`) &mdash; symlink a saved `.env` back into the working tree (`kpv link <key>` or `kpv ln <key>`)
+- **link** (`ln`) &mdash; symlink a saved `.env` back into the working tree (`kpv link [key]` or `kpv ln [key]`); when `[key]` is omitted the current directory name is used
 - **list** (`ls`) &mdash; enumerate the keys already managed by `kpv` (`kpv list` or `kpv ls`)
 - **delete** (`d`) &mdash; remove a saved key and its associated `.env` file (`kpv delete <key>` or `kpv d <key>`)
 
@@ -43,7 +43,7 @@ $ kpv delete web-app
 ```bash
 kpv --version    # Show version information
 kpv save [key]   # Save current .env file
-kpv link <key>   # Link saved .env to current directory
+kpv link [key]   # Link saved .env to current directory
 kpv list         # List saved keys
 kpv delete <key> # Delete saved key
 ```
