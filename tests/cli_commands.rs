@@ -42,6 +42,29 @@ fn save_without_key_defaults_to_directory_name() {
 
 #[test]
 #[serial]
+fn link_without_key_defaults_to_directory_name() {
+    let ctx = TestContext::new();
+    // 1. Save to the current directory (using the default save behavior)
+    ctx.write_env_file("DEFAULT_KEY=true\n");
+    ctx.cli().arg("save").assert().success();
+
+    // Remove .env and prepare for linking
+    std::fs::remove_file(ctx.work_dir().join(".env")).unwrap();
+
+    // 2. Execute link without arguments
+    ctx.cli()
+        .arg("link")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Linked: 'work' -> ./.env"));
+
+    // 3. Check if the link was created
+    let link_path = ctx.work_dir().join(".env");
+    assert!(link_path.exists());
+}
+
+#[test]
+#[serial]
 fn link_creates_symlink() {
     let ctx = TestContext::new();
     ctx.write_env_file("DATABASE_URL=postgres://localhost\n");

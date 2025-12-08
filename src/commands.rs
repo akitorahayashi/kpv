@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::env;
 use std::path::PathBuf;
 
@@ -29,15 +30,12 @@ pub fn save(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let source = PathBuf::from(".env");
 
-    let key_owned;
-    let key_to_save = if let Some(key) = key_opt {
-        key
-    } else {
-        key_owned = derive_dir_name()?;
-        &key_owned
+    let key_to_save = match key_opt {
+        Some(key) => Cow::from(key),
+        None => Cow::from(derive_dir_name()?),
     };
 
-    let command = core::save::SaveCommand { key: key_to_save, source_path: &source };
+    let command = core::save::SaveCommand { key: &key_to_save, source_path: &source };
 
     command.execute(&storage)?;
     println!("✅ Saved: ./.env -> '{}'", key_to_save);
@@ -45,13 +43,19 @@ pub fn save(key_opt: Option<&str>) -> Result<(), KpvError> {
 }
 
 /// Link command: Create symlink from ~/.config/kpv/<key>/.env to ./.env
-pub fn link(key: &str) -> Result<(), KpvError> {
+pub fn link(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let dest = PathBuf::from(".env");
-    let command = core::link::LinkCommand { key, dest_path: &dest };
+
+    let key_to_link = match key_opt {
+        Some(key) => Cow::from(key),
+        None => Cow::from(derive_dir_name()?),
+    };
+
+    let command = core::link::LinkCommand { key: &key_to_link, dest_path: &dest };
 
     command.execute(&storage)?;
-    println!("🔗 Linked: '{}' -> ./.env", key);
+    println!("🔗 Linked: '{}' -> ./.env", key_to_link);
     Ok(())
 }
 

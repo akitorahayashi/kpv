@@ -22,7 +22,7 @@ fn link_without_saved_key_reports_not_found() {
     let ctx = TestContext::new();
 
     ctx.with_dir(ctx.work_dir(), || {
-        let err = link("unit-missing").expect_err("link should fail when key is missing");
+        let err = link(Some("unit-missing")).expect_err("link should fail when key is missing");
         assert_eq!(err.kind(), io::ErrorKind::NotFound);
     });
 }

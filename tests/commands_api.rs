@@ -30,7 +30,7 @@ fn link_uses_saved_env_via_library_api() {
 
     let link_workspace = ctx.create_workspace("sdk-link-workspace");
     ctx.with_dir(&link_workspace, || {
-        link("sdk-link").expect("library link should succeed");
+        link(Some("sdk-link")).expect("library link should succeed");
     });
 
     let link_path = link_workspace.join(".env");
