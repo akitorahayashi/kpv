@@ -16,7 +16,7 @@ impl<'a> Execute<()> for DeleteCommand<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::test_support::MockStorage;
+    use crate::commands::test_support::MockStorage;
 
     #[test]
     fn delete_invokes_storage() {

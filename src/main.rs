@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use kpv::commands;
 use kpv::error::KpvError;
 
 #[derive(Parser)]
@@ -40,10 +39,10 @@ fn main() {
     let cli = Cli::parse();
 
     let result: Result<(), KpvError> = match cli.command {
-        Commands::Save { key } => commands::save(key.as_deref()),
-        Commands::Link { key } => commands::link(key.as_deref()),
-        Commands::List => commands::list(),
-        Commands::Delete { key } => commands::delete(&key),
+        Commands::Save { key } => kpv::save(key.as_deref()),
+        Commands::Link { key } => kpv::link(key.as_deref()),
+        Commands::List => kpv::list(),
+        Commands::Delete { key } => kpv::delete(&key),
     };
 
     if let Err(e) = result {

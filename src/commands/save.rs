@@ -22,7 +22,7 @@ impl<'a> Execute<()> for SaveCommand<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::test_support::MockStorage;
+    use crate::commands::test_support::MockStorage;
     use crate::storage::Storage;
     use tempfile::NamedTempFile;
 
