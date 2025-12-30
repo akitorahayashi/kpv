@@ -2,7 +2,7 @@ use crate::error::KpvError;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub(crate) trait Storage {
+pub trait Storage {
     fn save_env(&self, key: &str, source_path: &Path) -> Result<(), KpvError>;
     fn link_env(&self, key: &str, dest_path: &Path) -> Result<(), KpvError>;
     fn list_keys(&self) -> Result<Vec<String>, KpvError>;

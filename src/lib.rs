@@ -3,7 +3,8 @@
 pub mod error;
 
 mod commands;
-mod storage;
+pub mod storage;
+pub mod test_utils;
 
 use std::borrow::Cow;
 use std::env;
@@ -16,20 +17,24 @@ use storage::FilesystemStorage;
 fn derive_dir_name() -> Result<String, KpvError> {
     let current_path = env::current_dir()?;
     let dir_os = current_path.file_name().ok_or_else(|| {
-        KpvError::from(std::io::Error::new(
+        std::io::Error::new(
             std::io::ErrorKind::NotFound,
             "Could not determine current directory name",
-        ))
+        )
     })?;
 
     let dir_str = dir_os.to_str().ok_or_else(|| {
-        KpvError::from(std::io::Error::new(
+        std::io::Error::new(
             std::io::ErrorKind::InvalidData,
             "Current directory name is not valid UTF-8",
-        ))
+        )
     })?;
 
     Ok(dir_str.to_string())
+}
+
+fn resolve_key(key_opt: Option<&str>) -> Result<Cow<'_, str>, KpvError> {
+    if let Some(key) = key_opt { Ok(Cow::from(key)) } else { derive_dir_name().map(Cow::from) }
 }
 
 /// Save command: Copy ./.env to ~/.config/kpv/<key>/.env
@@ -37,10 +42,7 @@ pub fn save(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let source = PathBuf::from(".env");
 
-    let key_to_save = match key_opt {
-        Some(key) => Cow::from(key),
-        None => Cow::from(derive_dir_name()?),
-    };
+    let key_to_save = resolve_key(key_opt)?;
 
     let command = commands::save::SaveCommand { key: &key_to_save, source_path: &source };
 
@@ -54,10 +56,7 @@ pub fn link(key_opt: Option<&str>) -> Result<(), KpvError> {
     let storage = FilesystemStorage::new_default()?;
     let dest = PathBuf::from(".env");
 
-    let key_to_link = match key_opt {
-        Some(key) => Cow::from(key),
-        None => Cow::from(derive_dir_name()?),
-    };
+    let key_to_link = resolve_key(key_opt)?;
 
     let command = commands::link::LinkCommand { key: &key_to_link, dest_path: &dest };
 

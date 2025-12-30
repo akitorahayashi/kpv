@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
 #[derive(Default)]
-pub(crate) struct MockStorage {
+pub struct MockStorage {
     pub save_calls: RefCell<Vec<(String, PathBuf)>>,
     pub link_calls: RefCell<Vec<(String, PathBuf)>>,
     pub delete_calls: RefCell<Vec<String>>,
