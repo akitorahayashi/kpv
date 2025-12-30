@@ -15,8 +15,8 @@ Keys must consist only of alphanumeric characters (a-z, A-Z, 0-9) and hyphens (-
 
 `kpv` keeps the binary lean by funnelling everything through three library layers:
 
-- `src/commands.rs` holds the public API used by both the CLI and integration tests. It wires dependencies, performs user-facing logging, and returns `kpv::error::KpvError` on failure.
-- `src/core/` encapsulates the business rules via command structs (save/link/list/delete) that implement a shared `Execute` trait. Each command decides when to error without performing I/O.
+- `src/lib.rs` holds the public API used by both the CLI and integration tests. It wires dependencies, performs user-facing logging, and returns `kpv::error::KpvError` on failure.
+- `src/commands/` encapsulates the business rules via command structs (save/link/list/delete) that implement a shared `Execute` trait. Each command decides when to error without performing I/O.
 - `src/storage.rs` provides the `Storage` trait plus the `FilesystemStorage` implementation that talks to the filesystem, keeping path resolution and symlink logic in one place.
 
 This separation keeps side effects at the edge, makes core logic testable with mocks, and clarifies where to add new behaviors.

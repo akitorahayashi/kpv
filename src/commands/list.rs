@@ -16,8 +16,8 @@ impl Execute<Vec<String>> for ListCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::test_support::MockStorage;
     use crate::storage::Storage;
+    use crate::test_utils::MockStorage;
 
     #[test]
     fn list_returns_sorted_keys() {

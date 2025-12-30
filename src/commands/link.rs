@@ -26,8 +26,8 @@ impl<'a> Execute<()> for LinkCommand<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::test_support::MockStorage;
     use crate::storage::Storage;
+    use crate::test_utils::MockStorage;
 
     #[test]
     fn link_invokes_storage_when_key_exists_and_dest_free() {
