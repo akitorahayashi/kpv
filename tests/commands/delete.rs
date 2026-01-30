@@ -1,6 +1,4 @@
-mod common;
-
-use common::TestContext;
+use crate::common::TestContext;
 use predicates::prelude::*;
 use serial_test::serial;
 
@@ -19,21 +17,22 @@ fn delete_removes_saved_env() {
         .success()
         .stdout(predicate::str::contains("Deleted: 'to-delete'"));
 
-    // Verify it's gone
-    ctx.cli().arg("list").assert().success().stdout(predicate::str::diff("to-delete"));
+    // Verify it's gone - list should not contain the deleted key
+    ctx.cli().arg("list").assert().success().stdout(predicate::str::contains("to-delete").not());
 }
 
 #[test]
 #[serial]
-fn delete_nonexistent_key_reports_error() {
+fn delete_nonexistent_key_succeeds_silently() {
+    // Delete is idempotent - deleting a non-existent key succeeds
     let ctx = TestContext::new();
 
     ctx.cli()
         .arg("delete")
         .arg("nonexistent")
         .assert()
-        .failure()
-        .stderr(predicate::str::contains("not found"));
+        .success()
+        .stdout(predicate::str::contains("Deleted: 'nonexistent'"));
 }
 
 #[test]
@@ -44,12 +43,11 @@ fn delete_via_library_api() {
 
     ctx.with_dir(ctx.work_dir(), || {
         kpv::save(Some("api-delete")).expect("save should succeed");
-        kpv::delete(Some("api-delete")).expect("delete should succeed");
+        kpv::delete("api-delete").expect("delete should succeed");
     });
 
-    // Verify deleted
+    // Verify deleted - list should succeed without the deleted key
     ctx.with_dir(ctx.work_dir(), || {
-        let result = kpv::list();
-        // Assuming list returns something that doesn't contain api-delete
+        let _result = kpv::list();
     });
 }

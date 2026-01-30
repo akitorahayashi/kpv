@@ -1,6 +1,4 @@
-mod common;
-
-use common::TestContext;
+use crate::common::TestContext;
 use predicates::prelude::*;
 use serial_test::serial;
 

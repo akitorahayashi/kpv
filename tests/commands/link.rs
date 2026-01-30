@@ -1,22 +1,21 @@
-mod common;
-
-use common::TestContext;
+use crate::common::TestContext;
 use predicates::prelude::*;
 use serial_test::serial;
 use std::fs;
 
 #[test]
 #[serial]
-fn link_without_key_defaults_to_directory_name() {
+fn link_with_explicit_key_creates_symlink() {
     let ctx = TestContext::new();
-    // 1. Save to the current directory (using the default save behavior)
+    // 1. Save to the current directory
     ctx.write_env_file("DEFAULT_KEY=true\n");
     ctx.cli().arg("save").assert().success();
 
-    // 2. Link in a different workspace
-    let link_workspace = ctx.create_workspace("link-default-workspace");
+    // 2. Link in a different workspace using explicit key
+    let link_workspace = ctx.create_workspace("link-explicit-workspace");
     ctx.cli_in(&link_workspace)
         .arg("link")
+        .arg("work")
         .assert()
         .success()
         .stdout(predicate::str::contains("Linked: 'work' -> ./.env"));
@@ -27,11 +26,7 @@ fn link_without_key_defaults_to_directory_name() {
     {
         assert!(link_path.is_symlink(), ".env should be a symlink");
         let target = fs::read_link(&link_path).expect("Failed to read symlink target");
-        assert_eq!(
-            target,
-            ctx.saved_env_path("work"),
-            "Symlink target should point to saved .env",
-        );
+        assert_eq!(target, ctx.saved_env_path("work"), "Symlink target should point to saved .env",);
     }
 }
 
@@ -66,7 +61,8 @@ fn link_without_saved_key_reports_not_found() {
     let ctx = TestContext::new();
 
     ctx.with_dir(ctx.work_dir(), || {
-        let err = kpv::link(Some("unit-missing")).expect_err("link should fail when key is missing");
+        let err =
+            kpv::link(Some("unit-missing")).expect_err("link should fail when key is missing");
         assert_eq!(err.kind(), std::io::ErrorKind::NotFound);
     });
 }

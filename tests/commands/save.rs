@@ -1,6 +1,4 @@
-mod common;
-
-use common::TestContext;
+use crate::common::TestContext;
 use predicates::prelude::*;
 use serial_test::serial;
 
@@ -45,7 +43,8 @@ fn save_without_env_file_reports_not_found() {
     let ctx = TestContext::new();
 
     ctx.with_dir(ctx.work_dir(), || {
-        let err = kpv::save(Some("unit-missing")).expect_err("save should fail when .env is absent");
+        let err =
+            kpv::save(Some("unit-missing")).expect_err("save should fail when .env is absent");
         assert_eq!(err.kind(), std::io::ErrorKind::NotFound);
     });
 }
